@@ -1,0 +1,6 @@
+note over browser:
+submit button is clicked 
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: Status Code: 201, JSON-data: {"message": "note created"}
