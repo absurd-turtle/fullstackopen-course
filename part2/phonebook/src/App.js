@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 
 import Persons from "./components/Persons"
 import PersonForm from "./components/PersonForm"
 import Filter from "./components/Filter"
+
+import phonebookService from './services/phonebook'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -15,8 +16,8 @@ const App = () => {
 
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    phonebookService
+      .getAll()
       .then(response => {
         setPersons(response.data)
       })
@@ -29,7 +30,25 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     }
     else {
-      setPersons(persons.concat({ name: newName, number: newNumber }))
+      phonebookService
+        .create({ name: newName, number: newNumber })
+        .then(response => {
+          setPersons(persons.concat(response.data))
+        })
+    }
+  }
+
+  const removePerson = (person) => {
+    phonebookService
+      .remove(person.id)
+      .then(response => {
+        setPersons(persons.filter(p => p.id != person.id))
+      })
+  }
+
+  const removeFromPhonebook = (person) => {
+    if (window.confirm("Delete " + person.name + "?")) {
+      removePerson(person)
     }
   }
 
@@ -61,7 +80,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={persons} filterString={filterString} />
+      <Persons persons={persons} filterString={filterString} deletePerson={removeFromPhonebook} />
 
     </div >
   )
