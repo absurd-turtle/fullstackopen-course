@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import Persons from "./components/Persons"
 import PersonForm from "./components/PersonForm"
 import Filter from "./components/Filter"
+import Notification from "./components/Notification"
+import "./main.css"
 
 import phonebookService from './services/phonebook'
 
@@ -13,6 +15,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterString, setFilterString] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
 
   useEffect(() => {
@@ -33,7 +36,11 @@ const App = () => {
       phonebookService
         .create({ name: newName, number: newNumber })
         .then(response => {
+          setNotificationMessage("Added " + response.data.name)
           setPersons(persons.concat(response.data))
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
         })
     }
   }
@@ -65,6 +72,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification type="success" message={notificationMessage} />
 
       <Filter filterString={filterString} handleFilterChange={handleFilterChange} />
 
